@@ -118,3 +118,19 @@ fn it_parses_days_short() {
 fn it_doesnt_parse_invalid_input() {
     parse_time("nope").unwrap();
 }
+
+// TODO
+
+#[test]
+#[should_panic]
+#[ignore]
+fn it_doesnt_parse_invalid_days() {
+    parse_time("lmao 0000.000").unwrap();
+}
+
+#[test]
+#[should_panic]
+#[ignore]
+fn it_doesnt_parse_invalid_milliseconds() {
+    parse_time("00 0000.lmao").unwrap();
+}

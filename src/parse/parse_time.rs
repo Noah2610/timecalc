@@ -21,14 +21,15 @@ pub fn parse_time<S: ToString>(input: S) -> TimeResult<Time> {
         //     }
         // })?;
 
-        let num = parse_num(&caps["num"])?;
+        let num = parse_num(&caps["num"], None)?;
         nums.push(num);
 
         if let Some(cap_days) = caps.name("days") {
-            days = Some(parse_num(cap_days.as_str())?);
+            days = Some(parse_num(cap_days.as_str(), Some("days"))?);
         }
         if let Some(cap_millis) = caps.name("millis") {
-            millis = Some(parse_num(cap_millis.as_str())?);
+            millis =
+                Some(parse_num(cap_millis.as_str(), Some("milliseconds"))?);
         }
     }
 
@@ -61,10 +62,11 @@ pub fn parse_time<S: ToString>(input: S) -> TimeResult<Time> {
     }
 }
 
-fn parse_num(s: &str) -> TimeResult<u32> {
+fn parse_num(s: &str, name: Option<&str>) -> TimeResult<u32> {
     s.parse::<u32>().or_else(|_| {
         Err(TimeError::ParseNumError {
             text: s.to_string(),
+            name: name.map(ToString::to_string),
         })
     })
 }

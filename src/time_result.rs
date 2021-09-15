@@ -4,7 +4,7 @@ pub type TimeResult<T> = Result<T, TimeError>;
 
 pub enum TimeError {
     ParseInputError { input: String },
-    ParseNumError { text: String },
+    ParseNumError { text: String, name: Option<String> },
 }
 
 impl fmt::Debug for TimeError {
@@ -12,8 +12,11 @@ impl fmt::Debug for TimeError {
         write!(f, "[Error] {}", match self {
             TimeError::ParseInputError { input } =>
                 format!("Failed to parse time from string \"{}\"", input),
-            TimeError::ParseNumError { text } =>
-                format!("Failed to parse string to number \"{}\"", text),
+            TimeError::ParseNumError { text, name } => format!(
+                "Failed to parse {name} to number \"{text}\"",
+                text = text,
+                name = name.as_ref().map(String::as_str).unwrap_or("string"),
+            ),
         })
     }
 }
