@@ -2,11 +2,16 @@ use crate::time::Time;
 use crate::time_result::{TimeError, TimeResult};
 
 pub fn parse_time<S: ToString>(input: S) -> TimeResult<Time> {
-    let re = regex::Regex::new(r"(?P<num>\d{1,2}):?").unwrap();
+    let re = regex::Regex::new(
+        r"(?:(?P<days>\d+) )?(?P<num>\d{1,2}):?(?:\.(?P<millis>\d{1,3})$\s*)?",
+    )
+    .unwrap();
 
     let input = input.to_string();
 
     let mut nums: Vec<u32> = Vec::new();
+    let mut days: Option<u32> = None;
+    let mut millis: Option<u32> = None;
 
     // for cap in caps.iter().skip(1) {
     for caps in re.captures_iter(input.as_str()) {
@@ -18,6 +23,13 @@ pub fn parse_time<S: ToString>(input: S) -> TimeResult<Time> {
 
         let num = parse_num(&caps["num"])?;
         nums.push(num);
+
+        if let Some(cap_days) = caps.name("days") {
+            days = Some(parse_num(cap_days.as_str())?);
+        }
+        if let Some(cap_millis) = caps.name("millis") {
+            millis = Some(parse_num(cap_millis.as_str())?);
+        }
     }
 
     match (nums.get(0), nums.get(1), nums.get(2)) {
@@ -25,18 +37,24 @@ pub fn parse_time<S: ToString>(input: S) -> TimeResult<Time> {
             input: input.to_string(),
         }),
         (Some(&hours), None, None) => Ok(Time {
+            days: days.unwrap_or(0),
             hours,
+            milliseconds: millis.unwrap_or(0),
             ..Default::default()
         }),
         (Some(&hours), Some(&minutes), None) => Ok(Time {
+            days: days.unwrap_or(0),
             hours,
             minutes,
+            milliseconds: millis.unwrap_or(0),
             ..Default::default()
         }),
         (Some(&hours), Some(&minutes), Some(&seconds)) => Ok(Time {
+            days: days.unwrap_or(0),
             hours,
             minutes,
             seconds,
+            milliseconds: millis.unwrap_or(0),
             ..Default::default()
         }),
         _ => unreachable!(),
@@ -90,7 +108,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn it_parses_hours_minutes_seconds_and_milliseconds_with_colon() {
         let expected = Time {
             hours: 1,
@@ -127,7 +144,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn it_parses_hours_minutes_seconds_and_milliseconds_short() {
         let expected = Time {
             hours: 1,
@@ -137,6 +153,34 @@ mod tests {
             ..Default::default()
         };
         let actual = parse_time("012345.678").unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn it_parses_days_with_colon() {
+        let expected = Time {
+            days: 1,
+            hours: 2,
+            minutes: 34,
+            seconds: 56,
+            milliseconds: 789,
+            ..Default::default()
+        };
+        let actual = parse_time("1 02:34:56.789").unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn it_parses_days_short() {
+        let expected = Time {
+            days: 1,
+            hours: 2,
+            minutes: 34,
+            seconds: 56,
+            milliseconds: 789,
+            ..Default::default()
+        };
+        let actual = parse_time("01 023456.789").unwrap();
         assert_eq!(expected, actual);
     }
 
