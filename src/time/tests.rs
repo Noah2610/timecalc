@@ -54,3 +54,35 @@ fn it_formats_to_string() {
     let actual = time.to_string();
     assert_eq!(expected, actual);
 }
+
+#[test]
+fn it_formats_to_string_with_zero_time() {
+    let time = Time::default();
+    let expected = String::from("00:00");
+    let actual = time.to_string();
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn it_formats_to_string_with_only_non_zero_days() {
+    let time = Time::default().with_days(50);
+    let expected = String::from("50 00:00");
+    let actual = time.to_string();
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn it_formats_to_string_with_only_non_zero_milliseconds() {
+    let time = Time::default().with_milliseconds(500);
+    let expected = String::from("00:00:00.500");
+    let actual = time.to_string();
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn it_formats_to_string_with_negative_sign() {
+    let time = Time::default().with_seconds(30).with_is_positive(false);
+    let expected = String::from("-00:00:30");
+    let actual = time.to_string();
+    assert_eq!(expected, actual);
+}

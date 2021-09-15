@@ -150,7 +150,11 @@ impl fmt::Display for Time {
             String::new()
         };
         let milliseconds = if self.milliseconds > 0 {
-            format!(".{:0>3}", self.milliseconds)
+            format!(
+                "{}.{:0>3}",
+                if self.seconds == 0 { ":00" } else { "" },
+                self.milliseconds
+            )
         } else {
             String::new()
         };
