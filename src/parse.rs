@@ -104,6 +104,43 @@ mod tests {
     }
 
     #[test]
+    fn it_parses_hours_and_minutes_short() {
+        let expected = Time {
+            hours: 1,
+            minutes: 23,
+            ..Default::default()
+        };
+        let actual = parse_time("0123").unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn it_parses_hours_minutes_and_seconds_short() {
+        let expected = Time {
+            hours: 1,
+            minutes: 23,
+            seconds: 45,
+            ..Default::default()
+        };
+        let actual = parse_time("012345").unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    #[ignore]
+    fn it_parses_hours_minutes_seconds_and_milliseconds_short() {
+        let expected = Time {
+            hours: 1,
+            minutes: 23,
+            seconds: 45,
+            milliseconds: 678,
+            ..Default::default()
+        };
+        let actual = parse_time("012345.678").unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
     #[should_panic]
     fn it_doesnt_parse_invalid_input() {
         parse_time("nope").unwrap();
