@@ -33,33 +33,85 @@ pub fn parse_time<S: ToString>(input: S) -> TimeResult<Time> {
         }
     }
 
-    match (nums.get(0), nums.get(1), nums.get(2)) {
-        (None, None, None) => Err(TimeError::ParseInputError {
+    if nums.is_empty() && days.is_none() && millis.is_none() {
+        return Err(TimeError::ParseInputError {
             input: input.to_string(),
-        }),
-        (Some(&hours), None, None) => Ok(Time {
-            days: days.unwrap_or(0),
-            hours,
-            milliseconds: millis.unwrap_or(0),
-            ..Default::default()
-        }),
-        (Some(&hours), Some(&minutes), None) => Ok(Time {
-            days: days.unwrap_or(0),
-            hours,
-            minutes,
-            milliseconds: millis.unwrap_or(0),
-            ..Default::default()
-        }),
-        (Some(&hours), Some(&minutes), Some(&seconds)) => Ok(Time {
-            days: days.unwrap_or(0),
-            hours,
-            minutes,
-            seconds,
-            milliseconds: millis.unwrap_or(0),
-            ..Default::default()
-        }),
-        _ => unreachable!(),
+        });
     }
+
+    let mut time = Time::default();
+    let mut iter = nums.into_iter();
+
+    days.map(|days| time.set_days(days));
+    iter.next().map(|hours| time.set_hours(hours));
+    iter.next().map(|minutes| time.set_minutes(minutes));
+    iter.next().map(|seconds| time.set_seconds(seconds));
+    millis.map(|millis| time.set_milliseconds(millis));
+
+    Ok(time)
+
+    // iter.next()
+    //     .map(|hours| {
+    //         let time = time.with_hours(hours);
+    //         iter.next()
+    //             .map(|minutes| {
+    //                 let time = time.with_minutes(minutes);
+    //                 iter.next()
+    //                     .map(|seconds| time.with_seconds(seconds))
+    //                     .or_else(time)
+    //             })
+    //             .or_else(time)
+    //     })
+    //     .or_else(time);
+
+    // if let Some(hours) = iter.next() {
+    //     time.set_hours(hours);
+    // }
+    // if let Some(minutes) = iter.next() {
+    //     time.set_minutes(minutes);
+    // }
+    // if let Some(seconds) = iter.next() {
+    //     time.set_seconds(seconds);
+    // }
+
+    // match (nums.get(0), nums.get(1), nums.get(2)) {
+    //     (None, None, None) => Err(TimeError::ParseInputError {
+    //         input: input.to_string(),
+    //     }),
+    //     (Some(&hours), None, None) => Ok({
+    //         let mut time = Time::default();
+    //         if let Some(days) = days {
+    //             time.set_days(days);
+    //         }
+    //         if let Some(milliseconds) = millis {
+    //             time.set_milliseconds(milliseconds);
+    //         }
+    //         time.with_hours(hours)
+    //     }),
+    //     (Some(&hours), Some(&minutes), None) => Ok({
+    //         let mut time = Time::default();
+    //         if let Some(days) = days {
+    //             time.set_days(days);
+    //         }
+    //         if let Some(milliseconds) = millis {
+    //             time.set_milliseconds(milliseconds);
+    //         }
+    //         time.with_hours(hours).with_minutes(minutes)
+    //     }),
+    //     (Some(&hours), Some(&minutes), Some(&seconds)) => Ok({
+    //         let mut time = Time::default();
+    //         if let Some(days) = days {
+    //             time.set_days(days);
+    //         }
+    //         if let Some(milliseconds) = millis {
+    //             time.set_milliseconds(milliseconds);
+    //         }
+    //         time.with_hours(hours)
+    //             .with_minutes(minutes)
+    //             .with_seconds(seconds)
+    //     }),
+    //     _ => unreachable!(),
+    // }
 }
 
 fn parse_num(s: &str, name: Option<&str>) -> TimeResult<u32> {
