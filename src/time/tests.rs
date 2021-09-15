@@ -41,3 +41,16 @@ fn it_overflows_milliseconds() {
     assert_eq!(40, time.get_seconds());
     assert_eq!(500, time.get_milliseconds());
 }
+
+#[test]
+fn it_formats_to_string() {
+    let time = Time::default()
+        .with_days(1)
+        .with_hours(2)
+        .with_minutes(3)
+        .with_seconds(4)
+        .with_milliseconds(50);
+    let expected = String::from("1 02:03:04.050");
+    let actual = time.to_string();
+    assert_eq!(expected, actual);
+}

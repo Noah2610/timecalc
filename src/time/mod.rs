@@ -2,6 +2,7 @@ mod tests;
 
 use crate::parse::parse_time;
 use crate::time_result::TimeResult;
+use std::fmt;
 
 #[derive(PartialEq, Eq, Debug)]
 pub struct Time {
@@ -130,5 +131,38 @@ impl Time {
         self.seconds += self.milliseconds / 1000;
         self.milliseconds %= 1000;
         self.fix_seconds();
+    }
+}
+
+impl fmt::Display for Time {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let sign = if !self.is_positive { "-" } else { "" };
+        let days = if self.days > 0 {
+            format!("{} ", self.days)
+        } else {
+            String::new()
+        };
+        let hours = format!("{:0>2}", self.hours);
+        let minutes = format!("{:0>2}", self.minutes);
+        let seconds = if self.seconds > 0 {
+            format!(":{:0>2}", self.seconds)
+        } else {
+            String::new()
+        };
+        let milliseconds = if self.milliseconds > 0 {
+            format!(".{:0>3}", self.milliseconds)
+        } else {
+            String::new()
+        };
+        write!(
+            f,
+            "{sign}{days}{hours}:{minutes}{seconds}{milliseconds}",
+            sign = sign,
+            days = days,
+            hours = hours,
+            minutes = minutes,
+            seconds = seconds,
+            milliseconds = milliseconds,
+        )
     }
 }
