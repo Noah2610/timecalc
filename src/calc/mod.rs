@@ -36,6 +36,28 @@ pub fn sub(a: Time, b: Time) -> Time {
         .with_is_positive(is_positive)
 }
 
+pub fn mul(a: Time, b: Time) -> Time {
+    let ms = a.as_milliseconds() * b.as_milliseconds();
+    let res = TimeUnsafe::from_milliseconds(ms);
+    Time::default()
+        .with_days(res.days)
+        .with_hours(res.hours)
+        .with_minutes(res.minutes)
+        .with_seconds(res.seconds)
+        .with_milliseconds(res.milliseconds)
+}
+
+pub fn div(a: Time, b: Time) -> Time {
+    let ms = a.as_milliseconds() / b.as_milliseconds();
+    let res = TimeUnsafe::from_milliseconds(ms);
+    Time::default()
+        .with_days(res.days)
+        .with_hours(res.hours)
+        .with_minutes(res.minutes)
+        .with_seconds(res.seconds)
+        .with_milliseconds(res.milliseconds)
+}
+
 #[derive(Default)]
 struct TimeUnsafe {
     pub days:         u32,
@@ -87,4 +109,6 @@ mod tests {
         let actual = sub(a, b);
         assert_eq!(expected, actual);
     }
+
+    // TODO add mul and div tests
 }
