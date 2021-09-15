@@ -3,18 +3,40 @@ mod tests;
 use crate::parse::parse_time;
 use crate::time_result::TimeResult;
 
-#[derive(Default, PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug)]
 pub struct Time {
     days:         u32,
     hours:        u32,
     minutes:      u32,
     seconds:      u32,
     milliseconds: u32,
+    is_positive:  bool,
+}
+
+impl Default for Time {
+    fn default() -> Self {
+        Self {
+            days:         0,
+            hours:        0,
+            minutes:      0,
+            seconds:      0,
+            milliseconds: 0,
+            is_positive:  true,
+        }
+    }
 }
 
 impl Time {
     pub fn new<S: ToString>(s: S) -> TimeResult<Self> {
         parse_time(s)
+    }
+
+    pub fn as_milliseconds(&self) -> u128 {
+        (self.days as u128 * 24 * 60 * 60 * 1000)
+            + (self.hours as u128 * 60 * 60 * 1000)
+            + (self.minutes as u128 * 60 * 1000)
+            + (self.seconds as u128 * 1000)
+            + (self.milliseconds as u128)
     }
 
     pub fn get_days(&self) -> u32 {
@@ -73,6 +95,17 @@ impl Time {
     }
     pub fn with_milliseconds(mut self, milliseconds: u32) -> Self {
         self.set_milliseconds(milliseconds);
+        self
+    }
+
+    pub fn get_is_positive(&self) -> bool {
+        self.is_positive
+    }
+    pub fn set_is_positive(&mut self, is_positive: bool) {
+        self.is_positive = is_positive;
+    }
+    pub fn with_is_positive(mut self, is_positive: bool) -> Self {
+        self.set_is_positive(is_positive);
         self
     }
 
