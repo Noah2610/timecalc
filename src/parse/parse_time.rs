@@ -1,13 +1,22 @@
 use crate::time::Time;
 use crate::time_result::{TimeError, TimeResult};
+use regex::Regex;
 
 pub fn parse_time<S: ToString>(input: S) -> TimeResult<Time> {
-    let re = regex::Regex::new(
-        r"(?:(?P<days>\d+) )?(?P<num>\d{1,2}):?(?:\.(?P<millis>\d{1,3})$\s*)?",
-    )
-    .unwrap();
-
     let input = input.to_string();
+
+    let has_colon = input.contains(":");
+
+    let re = if has_colon {
+        Regex::new(
+            r"(?:(?P<days>\d+) )?(?P<num>\d+):?(?:\.(?P<millis>\d+)$\s*)?",
+        )
+    } else {
+        Regex::new(
+            r"(?:(?P<days>\d+) )?(?P<num>\d{1,2})(?:\.(?P<millis>\d+)$\s*)?",
+        )
+    }
+    .unwrap();
 
     let mut nums: Vec<u32> = Vec::new();
     let mut days: Option<u32> = None;

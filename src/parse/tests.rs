@@ -96,6 +96,26 @@ fn it_doesnt_parse_invalid_input() {
     parse_time("nope").unwrap();
 }
 
+#[test]
+fn it_parses_with_milliseconds_overflow() {
+    let expected = Time::default().with_milliseconds(90010);
+    assert_eq!(expected, parse_time("00:00:00.90010").unwrap());
+    assert_eq!(expected, parse_time("00:00.90010").unwrap());
+    assert_eq!(expected, parse_time("0000.90010").unwrap());
+}
+
+#[test]
+fn it_parses_with_seconds_overflow() {
+    let expected = Time::default().with_seconds(90);
+    assert_eq!(expected, parse_time("00:00:90").unwrap());
+}
+
+#[test]
+fn it_parses_with_minutes_overflow() {
+    let expected = Time::default().with_minutes(125);
+    assert_eq!(expected, parse_time("00:125:00").unwrap());
+}
+
 // TODO
 
 #[test]
