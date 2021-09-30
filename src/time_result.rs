@@ -3,6 +3,7 @@ use std::fmt;
 pub type TimeResult<T> = Result<T, TimeError>;
 
 pub enum TimeError {
+    Str(String),
     ParseInputError { input: String },
     ParseNumError { text: String, name: Option<String> },
 }
@@ -10,6 +11,7 @@ pub enum TimeError {
 impl fmt::Debug for TimeError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[Error] {}", match self {
+            TimeError::Str(s) => s.to_string(),
             TimeError::ParseInputError { input } =>
                 format!("Failed to parse time from string \"{}\"", input),
             TimeError::ParseNumError { text, name } => format!(
@@ -24,5 +26,17 @@ impl fmt::Debug for TimeError {
 impl fmt::Display for TimeError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::Debug::fmt(self, f)
+    }
+}
+
+impl From<String> for TimeError {
+    fn from(s: String) -> Self {
+        TimeError::Str(s)
+    }
+}
+
+impl<T> From<TimeError> for TimeResult<T> {
+    fn from(err: TimeError) -> Self {
+        Err(err)
     }
 }

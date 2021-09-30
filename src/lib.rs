@@ -1,6 +1,10 @@
 extern crate regex;
 
-mod calc;
+pub mod calc;
+pub mod time;
+
 mod parse;
-mod time;
 mod time_result;
+
+pub use time::Time;
+pub use time_result::{TimeError, TimeResult};
